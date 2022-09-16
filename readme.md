@@ -30,5 +30,5 @@ run()
 
 ## Need for support
 
-If you need support, please feel free to contact us at [info@logi.one](mailto:info@logi.one). We will be happy to help. 
+If you need support, please feel free to contact us at [info@logi.one](mailto:info@logi.one). We will be happy to help you. 
 
