@@ -1,14 +1,16 @@
 import { createInterface } from 'readline/promises'
 
-import * as logioneCLient from './logione-document-client'
-import * as tokenFileHandler from './tokenFileHandler'
-import * as searchQuery from './search-query'
+import { LogiONEDocumentClient }from './logione-document-client'
+import { readTokenFromFile, getSaveTokenToFileHandler } from './tokenFileHandler'
+import { SearchQuery, ColumnFilter } from './search-query'
 
-export const LogiONEDocumentClient = logioneCLient.LogiONEDocumentClient
-export const SearchQuery = searchQuery.SearchQuery
-export type ColumnFilter = searchQuery.ColumnFilter
-export const readTokenFromFile = tokenFileHandler.readTokenFromFile
-export const getSaveTokenToFileHandler = tokenFileHandler.getSaveTokenToFileHandler
+export { 
+    LogiONEDocumentClient,
+    SearchQuery,
+    ColumnFilter,
+    readTokenFromFile,
+    getSaveTokenToFileHandler,
+}
 
 export async function createLogiONEDocumentClient(config?: { tokenFilePath?: string, apiUrl?: string, token?: string }) {
     let token: string | undefined
