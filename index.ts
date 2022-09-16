@@ -11,9 +11,16 @@ export const readTokenFromFile = tokenFileHandler.readTokenFromFile
 export const getSaveTokenToFileHandler = tokenFileHandler.getSaveTokenToFileHandler
 
 export async function createLogiONEDocumentClient(config: { tokenFilePath?: string, apiUrl?: string, token?: string }) {
-    let token: string | undefined = await readTokenFromFile(config.tokenFilePath)
+    let token: string | undefined
+    try {
+        token = await readTokenFromFile(config.tokenFilePath)
+    } catch {
+    }
     if (!token) {
         token = config.token
+    }
+    if (!token) {
+        token = process.env.LOGIONE_DOCUMENT_API_TOKEN
     }
     while (!token) {
         const rl = createInterface(process.stdin, process.stdout)
