@@ -4,7 +4,9 @@
   "description": "SDK for LogiONE Document's API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "build-watch": "tsc -w"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/logione/document-sdk/issues"
   },
-  "homepage": "https://github.com/logione/document-sdk#readme"
+  "homepage": "https://github.com/logione/document-sdk#readme",
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
 }
