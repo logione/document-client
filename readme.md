@@ -21,7 +21,7 @@ const { createLogiONEDocumentClient } = require('@logi.one/document-client')
 
 async function run() {    
     const client = await createLogiONEDocumentClient()     
-    const documents = await client.search(`/documents`, { limit: 10, columnFilters: { name: 'My Document' } })     
+    const documents = await client.search('documents', { limit: 10, columnFilters: [{ column: 'extension', value: '.docx', match: true }] })     
     console.table(documents)
 }
 

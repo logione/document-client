@@ -10,14 +10,14 @@ export type ColumnFilter = searchQuery.ColumnFilter
 export const readTokenFromFile = tokenFileHandler.readTokenFromFile
 export const getSaveTokenToFileHandler = tokenFileHandler.getSaveTokenToFileHandler
 
-export async function createLogiONEDocumentClient(config: { tokenFilePath?: string, apiUrl?: string, token?: string }) {
+export async function createLogiONEDocumentClient(config?: { tokenFilePath?: string, apiUrl?: string, token?: string }) {
     let token: string | undefined
     try {
-        token = await readTokenFromFile(config.tokenFilePath)
+        token = await readTokenFromFile(config?.tokenFilePath)
     } catch {
     }
     if (!token) {
-        token = config.token
+        token = config?.token
     }
     if (!token) {
         token = process.env.LOGIONE_DOCUMENT_API_TOKEN
@@ -26,5 +26,5 @@ export async function createLogiONEDocumentClient(config: { tokenFilePath?: stri
         const rl = createInterface(process.stdin, process.stdout)
         token = await rl.question('Please enter your API token: ')
     }
-    return new LogiONEDocumentClient(token, getSaveTokenToFileHandler(config.tokenFilePath), config.apiUrl)
+    return new LogiONEDocumentClient(token, getSaveTokenToFileHandler(config?.tokenFilePath), config?.apiUrl)
 }
