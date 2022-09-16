@@ -1,7 +1,7 @@
 import { get, post, put, del, postStream, putStream, getStream } from '@logi.one/rest-client'
 import { SearchQuery } from './search-query'
 
-export class LogiONEClient {
+export class LogiONEDocumentClient {
     private accessToken?: string
 
     constructor(
