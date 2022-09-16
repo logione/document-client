@@ -1,7 +1,7 @@
 {
-  "name": "@logi.one/document-sdk",
+  "name": "@logi.one/document-client",
   "version": "0.1.0",
-  "description": "SDK for LogiONE Document's API",
+  "description": "Client for LogiONE Document's API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/logione/document-sdk.git"
+    "url": "git+https://github.com/logione/document-client.git"
   },
   "author": "LogiONE Sàrl",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/logione/document-sdk/issues"
+    "url": "https://github.com/logione/document-client/issues"
   },
-  "homepage": "https://github.com/logione/document-sdk#readme",
+  "homepage": "https://github.com/logione/document-client#readme",
   "devDependencies": {
     "@types/node": "^18.0.0",
     "typescript": "^4.8.3"
