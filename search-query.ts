@@ -5,7 +5,7 @@ export class SearchQuery {
     limit?: number
     skip?: number
     complete?: boolean
-    columnFilters: ColumnFilter[] = []
+    columnFilters?: ColumnFilter[] = []
 }
 
 export interface ColumnFilter {
