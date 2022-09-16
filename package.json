@@ -2,11 +2,14 @@
   "name": "@logi.one/document-client",
   "version": "0.1.1",
   "description": "Client for LogiONE Document's API",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["/dist"], 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "build-watch": "tsc -w"
+    "build-watch": "tsc -w",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
