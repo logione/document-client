@@ -1,14 +1,15 @@
 import { get, post, put, del, postStream, putStream, getStream } from '@logi.one/rest-client'
 import { SearchQuery } from './search-query'
 
+export const DEFAULT_API_URL = 'https://document-65qburttia-oa.a.run.app/api'
+
 export class LogiONEDocumentClient {
     private accessToken?: string
 
     constructor(
         private token: string,
         private readonly saveTokenHandler : (refreshToken: string) => Promise<void> | void,
-        private readonly apiUrl = 'https://document-65qburttia-oa.a.run.app/api',
-    ) {
+        private readonly apiUrl = DEFAULT_API_URL) {
     }
 
     search<T>(resource: string, query: SearchQuery): Promise<T[]> {
