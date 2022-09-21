@@ -10,6 +10,6 @@ export class SearchQuery {
 
 export interface ColumnFilter {
     column: string
-    value: string | number | boolean | { min: number, max: number }
+    value: string | number | boolean | { min: number, max: number } | { min: string, max: string}
     match: boolean
 }

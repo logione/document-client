@@ -101,7 +101,11 @@ export class LogiONEDocumentClient {
                         type = 'b'
                         break
                     case 'object':
-                        type = 'r'
+                        if (typeof filter.value.min === 'number') {
+                            type = 'r'
+                        } else {
+                            type = 'i'
+                        }
                         filter.value = `${filter.value.min},${filter.value.max}`
                         break
                     default:
