@@ -123,11 +123,11 @@ export class LogiONEDocumentClient {
             await this.refreshAccessToken()
         }
         try {
-            return request()
+            return await request()
         } catch (err) {
             if (err === 401) {
                 await this.refreshAccessToken()
-                return request()
+                return await request()
             } else {
                 throw err
             }
