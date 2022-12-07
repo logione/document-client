@@ -1,4 +1,4 @@
-import { get, post, put, del, postStream, putStream, getStream } from '@logi.one/rest-client'
+import { getJSON, postJSON, putJSON, deleteJSON, postStream, putStream, getStream } from '@logi.one/rest-client'
 import { SearchQuery } from './search-query'
 
 export const DEFAULT_API_URL = 'https://document-65qburttia-oa.a.run.app/api'
@@ -23,49 +23,49 @@ export class LogiONEDocumentClient {
 
     get<T>(resource: string): Promise<T> {
         const request = () => {
-            return get<T>(this.getUrl(resource), this.accessToken)
+            return getJSON<T>(this.getUrl(resource), { token: this.accessToken })
         }
         return this.run(request)
     }
 
     post<T>(resource: string, data: unknown): Promise<T> {
         const request = () => {
-            return post<T>(this.getUrl(resource), data, this.accessToken)
+            return postJSON<T>(this.getUrl(resource), { token: this.accessToken, body: data })
         }
         return this.run(request)
     }
 
     put<T>(resource: string, data: unknown): Promise<T> {
         const request = () => {
-            return put<T>(this.getUrl(resource), data, this.accessToken)
+            return putJSON<T>(this.getUrl(resource), { body: data, token: this.accessToken })
         }
         return this.run(request)
     }
 
     delete<T>(resource: string): Promise<T> {
         const request = () => {
-            return del<T>(this.getUrl(resource), this.accessToken)
+            return deleteJSON<T>(this.getUrl(resource), { token: this.accessToken })
         }
         return this.run(request)
     }
 
     postStream(resource: string, stream: NodeJS.ReadableStream): Promise<void> {
         const request = () => {
-            return postStream(this.getUrl(resource), stream, this.accessToken)
+            return postStream(this.getUrl(resource), stream, { token: this.accessToken })
         }
         return this.run(request)
     }
 
     putStream(resource: string, stream: NodeJS.ReadableStream): Promise<void> {
         const request = () => {
-            return putStream(this.getUrl(resource), stream, this.accessToken)
+            return putStream(this.getUrl(resource), stream, { token: this.accessToken })
         }
         return this.run(request)
     }
 
     getStream(resource: string): Promise<NodeJS.ReadableStream> {
         const request = () => {
-            return getStream(this.getUrl(resource), this.accessToken)
+            return getStream(this.getUrl(resource), { token: this.accessToken })
         }
         return this.run(request)
     }
@@ -124,8 +124,8 @@ export class LogiONEDocumentClient {
         }
         try {
             return await request()
-        } catch (err) {
-            if (err === 401) {
+        } catch (err: any) {
+            if (err?.status === 401) {
                 await this.refreshAccessToken()
                 return await request()
             } else {
@@ -139,9 +139,9 @@ export class LogiONEDocumentClient {
     }
 
     private async refreshAccessToken() {
-        const { access_token, refresh_token } = await post<{ access_token: string, refresh_token: string }>(
+        const { access_token, refresh_token } = await postJSON<{ access_token: string, refresh_token: string }>(
             `${this.apiUrl}/auth/token`,
-            { grant_type: 'refresh_token', refresh_token: this.token }
+            { headers: { grant_type: 'refresh_token', refresh_token: this.token } }
         )
         this.accessToken = access_token
         this.token = refresh_token
