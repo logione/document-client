@@ -1,6 +1,6 @@
 {
   "name": "@logi.one/document-client",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Client for LogiONE Document's API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -35,5 +35,12 @@
   "dependencies": {
     "@logi.one/rest-client": "^0.2.3"
   },
-  "keywords": ["logi", "logione", "document", "client", "api", "edm"]
+  "keywords": [
+    "logi",
+    "logione",
+    "document",
+    "client",
+    "api",
+    "edm"
+  ]
 }
