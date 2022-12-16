@@ -1,4 +1,6 @@
 import { getJSON, postJSON, putJSON, deleteJSON, postStream, putStream, getStream } from '@logi.one/rest-client'
+import { IncomingMessage } from 'http'
+
 import { SearchQuery } from './search-query'
 
 export const DEFAULT_API_URL = 'https://document-65qburttia-oa.a.run.app/api'
@@ -49,14 +51,14 @@ export class LogiONEDocumentClient {
         return this.run(request)
     }
 
-    postStream(resource: string, stream: NodeJS.ReadableStream): Promise<void> {
+    postStream(resource: string, stream: NodeJS.ReadableStream): Promise<IncomingMessage> {
         const request = () => {
             return postStream(this.getUrl(resource), stream, { token: this.accessToken })
         }
         return this.run(request)
     }
 
-    putStream(resource: string, stream: NodeJS.ReadableStream): Promise<void> {
+    putStream(resource: string, stream: NodeJS.ReadableStream): Promise<IncomingMessage> {
         const request = () => {
             return putStream(this.getUrl(resource), stream, { token: this.accessToken })
         }
