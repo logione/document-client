@@ -1,4 +1,4 @@
-import { getJSON, postJSON, putJSON, deleteJSON, postStream, putStream, getStream } from '@logi.one/rest-client'
+import { getJSON, postJSON, putJSON, deleteJSON, postStream, putStream, getStream, post } from '@logi.one/rest-client'
 import { IncomingMessage } from 'http'
 
 import { SearchQuery } from './search-query'
@@ -143,7 +143,7 @@ export class LogiONEDocumentClient {
     private async refreshAccessToken() {
         const { access_token, refresh_token } = await postJSON<{ access_token: string, refresh_token: string }>(
             `${this.apiUrl}/auth/token`,
-            { headers: { grant_type: 'refresh_token', refresh_token: this.token } }
+            { body: { grant_type: 'refresh_token', refresh_token: this.token } }
         )
         this.accessToken = access_token
         this.token = refresh_token
