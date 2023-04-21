@@ -139,15 +139,25 @@ export class LogiONEDocumentClient {
     private getUrl(resource: string) {
         return `${this.apiUrl}/${resource}`
     }
+    
+    private refreshAccessTokenPromise: Promise<void> | undefined
+    private isRefreshing = false
 
     private async refreshAccessToken() {
-        const { access_token, refresh_token } = await postJSON<{ access_token: string, refresh_token: string }>(
-            `${this.apiUrl}/auth/token`,
-            { body: { grant_type: 'refresh_token', refresh_token: this.token } }
-        )
-        this.accessToken = access_token
-        this.token = refresh_token
-        await this.saveTokenHandler(this.token)
+        if (!isRefreshing) {
+            isRefreshing = true
+            this.refreshAccessTokenPromise = () => {
+                const { access_token, refresh_token } = await postJSON<{ access_token: string, refresh_token: string }>(
+                    `${this.apiUrl}/auth/token`,
+                    { body: { grant_type: 'refresh_token', refresh_token: this.token } }
+                )
+                this.accessToken = access_token
+                this.token = refresh_token
+                await this.saveTokenHandler(this.token)
+                isRefreshing = false
+            }()
+        }
+        await this._refreshAccessToken
     }
 }
 
