@@ -8,6 +8,9 @@ export const DEFAULT_API_URL = 'https://document-65qburttia-oa.a.run.app/api'
 export class LogiONEDocumentClient {
     private accessToken?: string
 
+    private refreshAccessTokenPromise: Promise<void> | undefined
+    private isRefreshingToken = false
+
     constructor(
         private token: string,
         private readonly saveTokenHandler : (refreshToken: string) => Promise<void> | void,
@@ -139,14 +142,11 @@ export class LogiONEDocumentClient {
     private getUrl(resource: string) {
         return `${this.apiUrl}/${resource}`
     }
-    
-    private refreshAccessTokenPromise: Promise<void> | undefined
-    private isRefreshing = false
 
     private async refreshAccessToken() {
-        if (!isRefreshing) {
-            isRefreshing = true
-            this.refreshAccessTokenPromise = () => {
+        if (!this.isRefreshingToken) {
+            this.isRefreshingToken = true
+            this.refreshAccessTokenPromise = (async () => {
                 const { access_token, refresh_token } = await postJSON<{ access_token: string, refresh_token: string }>(
                     `${this.apiUrl}/auth/token`,
                     { body: { grant_type: 'refresh_token', refresh_token: this.token } }
@@ -154,10 +154,10 @@ export class LogiONEDocumentClient {
                 this.accessToken = access_token
                 this.token = refresh_token
                 await this.saveTokenHandler(this.token)
-                isRefreshing = false
-            }()
+                this.isRefreshingToken = false
+            })()
         }
-        await this._refreshAccessToken
+        await this.refreshAccessTokenPromise
     }
 }
 
