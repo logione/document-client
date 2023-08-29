@@ -7,7 +7,17 @@ export async function readTokenFromFile(file = DEFAULT_TOKEN_FILE_PATH): Promise
 }
 
 export function getSaveTokenToFileHandler(file = DEFAULT_TOKEN_FILE_PATH): (token: string) => Promise<void> {
-    return async (token: string) => {
-        await writeFile(file, token)
+    const saveHandler = async (token: string, tryNumber: number = 0) => {
+        try {
+            await writeFile(file, token)
+        } catch (err) {
+            tryNumber++
+            if (tryNumber > 10) {
+                throw err
+            }
+            await new Promise((resolve) => setTimeout(resolve, 100 * tryNumber))
+            await saveHandler(token, tryNumber)
+        }
     }
+    return saveHandler
 }
