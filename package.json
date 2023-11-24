@@ -1,6 +1,6 @@
 {
   "name": "@logi.one/document-client",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Client for LogiONE Document's API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,7 +33,7 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@logi.one/rest-client": "^0.3.1"
+    "@logi.one/rest-client": "^0.4.0"
   },
   "keywords": [
     "logi",
