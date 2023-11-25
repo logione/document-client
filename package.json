@@ -33,7 +33,7 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "@logi.one/rest-client": "^0.4.0"
+    "@logi.one/rest-client": "^0.4.1"
   },
   "keywords": [
     "logi",
