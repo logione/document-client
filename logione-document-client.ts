@@ -18,7 +18,7 @@ export class LogiONEDocumentClient {
     }
 
     search<T>(resource: string, query: SearchQuery): Promise<T[]> {
-        const searchParams = this.searchQueryToURLSearchParams(query).toString()
+        const searchParams = this.searchQueryToString(query)
         if (searchParams) {
             return this.get<T[]>(`${resource}?${searchParams}`)
         } else {
@@ -75,7 +75,7 @@ export class LogiONEDocumentClient {
         return this.run(request)
     }
 
-    private searchQueryToURLSearchParams(query: SearchQuery): URLSearchParams {
+    searchQueryToString(query: SearchQuery): string {
         const searchParams = new URLSearchParams()
         if (query.complete) {
             searchParams.append('complete', query.complete.toString())
@@ -117,10 +117,10 @@ export class LogiONEDocumentClient {
                         type = 's'
                         break
                 }
-                 searchParams.append('filter', `${filter.match ? '' : '-'}${type}${filter.column}:${filter.value}`)
+                searchParams.append('filter', `${filter.match ? '' : '-'}${type}${filter.column}:${filter.value}`)
             }
         }
-        return searchParams
+        return searchParams.toString().replace(/%3A/g, ':')
     }
 
     private async run<T>(request: () => Promise<T>): Promise<T> {
