@@ -29,11 +29,11 @@
   },
   "homepage": "https://github.com/logione/document-client#readme",
   "devDependencies": {
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.19.103",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@logi.one/rest-client": "^0.4.1"
+    "@logi.one/rest-client": "^0.5.0"
   },
   "keywords": [
     "logi",
