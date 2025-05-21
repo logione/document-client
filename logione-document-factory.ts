@@ -1,4 +1,4 @@
-import { createInterface } from 'readline/promises'
+import { createInterface } from 'node:readline/promises'
 import { DEFAULT_API_URL, LogiONEDocumentClient } from './logione-document-client'
 import { DEFAULT_TOKEN_FILE_PATH, getSaveTokenToFileHandler, readTokenFromFile } from './tokenFileHandler'
 
