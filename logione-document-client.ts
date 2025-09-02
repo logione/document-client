@@ -3,7 +3,7 @@ import { IncomingMessage } from 'http'
 
 import { SearchQuery } from './search-query'
 
-export const DEFAULT_API_URL = 'https://doc.logi.one/api'
+export const DEFAULT_API_URL = 'https://doc.logi.one/api/v2'
 
 export class LogiONEDocumentClient {
     private accessToken?: string
