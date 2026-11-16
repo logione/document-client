@@ -75,12 +75,15 @@ export class LogiONEDocumentClient {
         if (query.columnFilters) {
             for (const filter of query.columnFilters) {
                 let type: string
+                let value: string | number | boolean
                 switch (typeof filter.value) {
                     case 'number':
                         type = 'n'
+                        value = filter.value
                         break
                     case 'boolean':
                         type = 'b'
+                        value = filter.value
                         break
                     case 'object':
                         if (typeof filter.value.min === 'number') {
@@ -88,13 +91,14 @@ export class LogiONEDocumentClient {
                         } else {
                             type = 'i'
                         }
-                        filter.value = `${filter.value.min},${filter.value.max}`
+                        value = `${filter.value.min},${filter.value.max}`
                         break
                     default:
                         type = 's'
+                        value = filter.value
                         break
                 }
-                searchParams.append('filter', `${filter.match ? '' : '-'}${type}${filter.column}:${filter.value}`)
+                searchParams.append('filter', `${filter.match ? '' : '-'}${type}${filter.column}:${value}`)
             }
         }
         return searchParams.toString().replace(/%3A/g, ':')
