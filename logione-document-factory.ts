@@ -21,9 +21,15 @@ export async function createLogiONEDocumentClient(config: { tokenFilePath?: stri
     if (!token) {
         token = process.env.LOGIONE_DOCUMENT_API_TOKEN
     }
-    while (!token) {
+    if (!token) {
         const rl = createInterface(process.stdin, process.stdout)
-        token = await rl.question('Please enter your LogiONE API token: ')
+        try {
+            while (!token) {
+                token = await rl.question('Please enter your LogiONE API token: ')
+            }
+        } finally {
+            rl.close()
+        }
     }
     return new LogiONEDocumentClient(token, getSaveTokenToFileHandler(config.tokenFilePath), config.apiUrl)
 }
