@@ -2,7 +2,7 @@
 
 Node.js client for the [LogiONE Document](https://www.logi.one/document) API. It handles authentication for you: it finds your API token, gets access tokens, and refreshes them when they expire.
 
-Requires Node.js 18 or later. TypeScript types are included.
+Requires Node.js 20.3 or later. TypeScript types are included.
 
 ## Install
 
