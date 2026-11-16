@@ -29,7 +29,7 @@ export async function createLogiONEDocumentClient(config: { tokenFilePath?: stri
         rl.on('close', () => inputClosed.abort())
         try {
             while (!token) {
-                token = await rl.question('Please enter your LogiONE API token: ', { signal: inputClosed.signal })
+                token = (await rl.question('Please enter your LogiONE API token: ', { signal: inputClosed.signal })).trim()
             }
         } catch (err) {
             if (inputClosed.signal.aborted) {
