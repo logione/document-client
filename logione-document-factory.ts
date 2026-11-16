@@ -23,10 +23,19 @@ export async function createLogiONEDocumentClient(config: { tokenFilePath?: stri
     }
     if (!token) {
         const rl = createInterface(process.stdin, process.stdout)
+        // If the input ends (Ctrl+D, end of piped input), cancel the pending question:
+        // otherwise it never resolves and the process exits silently.
+        const inputClosed = new AbortController()
+        rl.on('close', () => inputClosed.abort())
         try {
             while (!token) {
-                token = await rl.question('Please enter your LogiONE API token: ')
+                token = await rl.question('Please enter your LogiONE API token: ', { signal: inputClosed.signal })
             }
+        } catch (err) {
+            if (inputClosed.signal.aborted) {
+                throw new Error('No LogiONE API token provided')
+            }
+            throw err
         } finally {
             rl.close()
         }
