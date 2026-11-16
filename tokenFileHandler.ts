@@ -9,7 +9,7 @@ export async function readTokenFromFile(file = DEFAULT_TOKEN_FILE_PATH): Promise
 export function getSaveTokenToFileHandler(file = DEFAULT_TOKEN_FILE_PATH): (token: string) => Promise<void> {
     const saveHandler = async (token: string, tryNumber: number = 0) => {
         try {
-            await writeFile(file, token)
+            await writeFile(file, token, { mode: 0o600 })
         } catch (err) {
             tryNumber++
             if (tryNumber > 10) {
