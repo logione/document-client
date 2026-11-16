@@ -1,18 +1,21 @@
-import { getJSON, postJSON, putJSON, deleteJSON } from '@logi.one/rest-client'
+import { RestClient } from '@logi.one/rest-client'
 
 import { SearchQuery } from './search-query'
 
 export const DEFAULT_API_URL = 'https://doc.logi.one/api/v2'
 
 export class LogiONEDocumentClient {
-    private accessToken?: string
+    private readonly client: RestClient
+    private readonly refreshTokenClient: RestClient
 
     private refreshAccessTokenPromise: Promise<void> | undefined
 
     constructor(
         private token: string,
         private readonly saveTokenHandler : (refreshToken: string) => Promise<void> | void,
-        private readonly apiUrl = DEFAULT_API_URL) {
+        apiUrl = DEFAULT_API_URL) {
+        this.client = new RestClient({ baseUrl: apiUrl })
+        this.refreshTokenClient = new RestClient({ baseUrl: apiUrl })
     }
 
     search<T>(resource: string, query: SearchQuery): Promise<T[]> {
@@ -25,31 +28,19 @@ export class LogiONEDocumentClient {
     }
 
     get<T>(resource: string): Promise<T> {
-        const request = () => {
-            return getJSON<T>(this.getUrl(resource), { token: this.accessToken })
-        }
-        return this.run(request)
+        return this.run(() => this.client.getJSON<T>(resource))
     }
 
     post<T>(resource: string, data: unknown): Promise<T> {
-        const request = () => {
-            return postJSON<T>(this.getUrl(resource), { token: this.accessToken, body: data })
-        }
-        return this.run(request)
+        return this.run(() => this.client.postJSON<T>(resource, { body: data }))
     }
 
     put<T>(resource: string, data: unknown): Promise<T> {
-        const request = () => {
-            return putJSON<T>(this.getUrl(resource), { body: data, token: this.accessToken })
-        }
-        return this.run(request)
+        return this.run(() => this.client.putJSON<T>(resource, { body: data }))
     }
 
     delete<T>(resource: string): Promise<T> {
-        const request = () => {
-            return deleteJSON<T>(this.getUrl(resource), { token: this.accessToken })
-        }
-        return this.run(request)
+        return this.run(() => this.client.deleteJSON<T>(resource))
     }
 
     searchQueryToString(query: SearchQuery): string {
@@ -105,7 +96,7 @@ export class LogiONEDocumentClient {
     }
 
     private async run<T>(request: () => Promise<T>): Promise<T> {
-        if (!this.accessToken) {
+        if (!this.client.token) {
             await this.refreshAccessToken()
         }
         try {
@@ -120,19 +111,15 @@ export class LogiONEDocumentClient {
         }
     }
 
-    private getUrl(resource: string) {
-        return `${this.apiUrl}/${resource}`
-    }
-
     private refreshAccessToken(): Promise<void> {
         if (!this.refreshAccessTokenPromise) {
             this.refreshAccessTokenPromise = (async () => {
                 try {
-                    const { access_token, refresh_token } = await postJSON<{ access_token: string, refresh_token: string }>(
-                        `${this.apiUrl}/auth/token`,
+                    const { access_token, refresh_token } = await this.refreshTokenClient.postJSON<{ access_token: string, refresh_token: string }>(
+                        '/auth/token',
                         { body: { grant_type: 'refresh_token', refresh_token: this.token } }
                     )
-                    this.accessToken = access_token
+                    this.client.token = access_token
                     this.token = refresh_token
                     await this.saveTokenHandler(this.token)
                 } finally {

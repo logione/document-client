@@ -16,7 +16,7 @@
     "prepublishOnly": "npm run build"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.3.0"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "typescript": "^7.0.0"
   },
   "dependencies": {
-    "@logi.one/rest-client": "^0.5.0"
+    "@logi.one/rest-client": "^1.0.0"
   },
   "keywords": [
     "logi",
