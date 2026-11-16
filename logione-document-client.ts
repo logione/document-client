@@ -1,5 +1,4 @@
-import { getJSON, postJSON, putJSON, deleteJSON, postStream, putStream, getStream, post } from '@logi.one/rest-client'
-import { IncomingMessage } from 'http'
+import { getJSON, postJSON, putJSON, deleteJSON } from '@logi.one/rest-client'
 
 import { SearchQuery } from './search-query'
 
@@ -49,27 +48,6 @@ export class LogiONEDocumentClient {
     delete<T>(resource: string): Promise<T> {
         const request = () => {
             return deleteJSON<T>(this.getUrl(resource), { token: this.accessToken })
-        }
-        return this.run(request)
-    }
-
-    postStream(resource: string, stream: NodeJS.ReadableStream): Promise<IncomingMessage> {
-        const request = () => {
-            return postStream(this.getUrl(resource), stream, { token: this.accessToken })
-        }
-        return this.run(request)
-    }
-
-    putStream(resource: string, stream: NodeJS.ReadableStream): Promise<IncomingMessage> {
-        const request = () => {
-            return putStream(this.getUrl(resource), stream, { token: this.accessToken })
-        }
-        return this.run(request)
-    }
-
-    getStream(resource: string): Promise<NodeJS.ReadableStream> {
-        const request = () => {
-            return getStream(this.getUrl(resource), { token: this.accessToken })
         }
         return this.run(request)
     }
