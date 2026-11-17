@@ -13,10 +13,10 @@ npm install @logi.one/document-client
 ## Quick start
 
 ```javascript
-const { createLogiONEDocumentClient } = require('@logi.one/document-client')
+const { LogiONEDocumentClient } = require('@logi.one/document-client')
 
 async function run() {
-    const client = await createLogiONEDocumentClient()
+    const client = await LogiONEDocumentClient.create()
     const documents = await client.search('documents', {
         limit: 10,
         columnFilters: [{ column: 'extension', value: '.docx', match: true }]
@@ -29,11 +29,13 @@ run()
 
 ## API token
 
-`createLogiONEDocumentClient()` looks for your API token in this order:
+`LogiONEDocumentClient.create()` looks for your API token in this order:
 
-1. The token file (`.logione-document-api-token` in the current directory by default).
+1. The token file (`.logione-document-api-token` in the current directory by default), or your [token storage](#custom-token-storage).
 2. The `LOGIONE_DOCUMENT_API_TOKEN` environment variable.
 3. A prompt on the command line. If the input ends before a token is entered, it throws `No LogiONE API token provided`.
+
+`create()` gets an access token before returning the client.
 
 Each time the client refreshes its access token, it receives a new API token and saves it to the token file. The file always holds the latest token, so keep it between runs: after the first refresh, the original token is no longer valid.
 
@@ -41,20 +43,41 @@ On Linux and macOS, a token file created by the client can only be read by its o
 
 ## Configuration
 
+`create()` takes the token file path (default: `.logione-document-api-token`) and the API URL (default: `https://doc.logi.one/api/v2`):
+
 ```javascript
-const client = await createLogiONEDocumentClient({
-    tokenFilePath: '/var/lib/my-app/.logione-document-api-token' // default: '.logione-document-api-token'
+const client = await LogiONEDocumentClient.create('/var/lib/my-app/.logione-document-api-token')
+
+// Only the API URL
+const client = await LogiONEDocumentClient.create(undefined, 'https://my-server/api/v2')
+```
+
+### Custom token storage
+
+To keep the API token somewhere other than a file, such as a database or a secret store, pass a token storage with a `load` and a `save` function instead of the file path:
+
+```typescript
+import { LogiONEDocumentClient } from '@logi.one/document-client'
+
+const client = await LogiONEDocumentClient.create({
+    load: () => db.getToken(), // the saved token, or undefined when there is none yet
+    save: (newToken) => db.setToken(newToken) // called after every refresh
 })
 ```
+
+The API URL can be given as the second argument, as with a file path.
+
+Both can be async. When `load` returns no token, the client falls back to the `LOGIONE_DOCUMENT_API_TOKEN` environment variable, then to the prompt, as with the token file.
+
 
 ## Requests
 
 Each method takes a resource path (for example `documents` or `documents/${id}`) and returns the parsed JSON response. With TypeScript, pass the expected type as a generic.
 
 ```typescript
-import { createLogiONEDocumentClient } from '@logi.one/document-client'
+import { LogiONEDocumentClient } from '@logi.one/document-client'
 
-const client = await createLogiONEDocumentClient()
+const client = await LogiONEDocumentClient.create()
 
 const document = await client.get<MyDocument>(`documents/${id}`)
 const created = await client.post<MyDocument>('documents', newDocument)
@@ -104,18 +127,6 @@ Each filter has a `column`, a `value`, and `match`. `match: true` keeps the rows
 | `{ min: number, max: number }` | Number range |
 | `{ min: string, max: string }` | Text range (for example, ISO dates) |
 
-## Custom token storage
-
-To store the API token somewhere other than a file, create the client directly with your own save function:
-
-```typescript
-import { LogiONEDocumentClient } from '@logi.one/document-client'
-
-const client = new LogiONEDocumentClient(
-    await loadToken(),
-    async (newToken) => { await saveToken(newToken) } // called after every refresh
-)
-```
 
 ## Support
 

@@ -1,18 +1,37 @@
 import { IRestClient, RestClient } from '@logi.one/rest-client'
 
 import { SearchQuery } from './search-query'
+import { DEFAULT_TOKEN_FILE_PATH, TokenStorage, createTokenFileStorage, findToken } from './token-storage'
 
 export const DEFAULT_API_URL = 'https://doc.logi.one/api/v2'
 
 export class LogiONEDocumentClient {
     private readonly client: RestClient
 
-    private firstAccessTokenPromise: Promise<void> | undefined
+    /**
+     * Creates a client and gets its first access token, so an invalid API token fails here.
+     * The API token is loaded from the token storage (a file by default), the LOGIONE_DOCUMENT_API_TOKEN
+     * environment variable or a prompt, and the new one is saved to the token storage after every refresh.
+     */
+    static async create(tokenFilePath?: string, apiUrl?: string): Promise<LogiONEDocumentClient>
+    static async create(tokenStorage: TokenStorage, apiUrl?: string): Promise<LogiONEDocumentClient>
+    static async create(tokenConfig?: string | TokenStorage, apiUrl?: string): Promise<LogiONEDocumentClient> {
+        let tokenStorage: TokenStorage
+        if (tokenConfig && typeof tokenConfig === 'object') {
+            tokenStorage = tokenConfig
+        } else {
+            tokenStorage = createTokenFileStorage(tokenConfig || DEFAULT_TOKEN_FILE_PATH)
+        }
+        const token = await findToken(tokenStorage)
+        const documentClient = new LogiONEDocumentClient(token, tokenStorage, apiUrl || DEFAULT_API_URL)
+        documentClient.client.token = await documentClient.renewAccessToken(documentClient.client)
+        return documentClient
+    }
 
-    constructor(
+    private constructor(
         private token: string,
-        private readonly saveTokenHandler : (refreshToken: string) => Promise<void> | void,
-        apiUrl = DEFAULT_API_URL) {
+        private readonly tokenStorage: TokenStorage,
+        apiUrl: string) {
         this.client = new RestClient({
             baseUrl: apiUrl,
             retry: 2,
@@ -30,19 +49,19 @@ export class LogiONEDocumentClient {
     }
 
     get<T>(resource: string): Promise<T> {
-        return this.run(() => this.client.getJSON<T>(resource))
+        return this.client.getJSON<T>(resource)
     }
 
     post<T>(resource: string, data: unknown): Promise<T> {
-        return this.run(() => this.client.postJSON<T>(resource, { body: data }))
+        return this.client.postJSON<T>(resource, { body: data })
     }
 
     put<T>(resource: string, data: unknown): Promise<T> {
-        return this.run(() => this.client.putJSON<T>(resource, { body: data }))
+        return this.client.putJSON<T>(resource, { body: data })
     }
 
     delete<T>(resource: string): Promise<T> {
-        return this.run(() => this.client.deleteJSON<T>(resource))
+        return this.client.deleteJSON<T>(resource)
     }
 
     searchQueryToString(query: SearchQuery): string {
@@ -97,34 +116,13 @@ export class LogiONEDocumentClient {
         return searchParams.toString().replace(/%3A/g, ':')
     }
 
-    private async run<T>(request: () => Promise<T>): Promise<T> {
-        // onUnauthorized only renews a token that was sent, so the first access token is fetched here
-        if (!this.client.token) {
-            await this.getFirstAccessToken()
-        }
-        return request()
-    }
-
-    private getFirstAccessToken(): Promise<void> {
-        if (!this.firstAccessTokenPromise) {
-            this.firstAccessTokenPromise = (async () => {
-                try {
-                    this.client.token = await this.renewAccessToken(this.client)
-                } finally {
-                    this.firstAccessTokenPromise = undefined
-                }
-            })()
-        }
-        return this.firstAccessTokenPromise
-    }
-
     private async renewAccessToken(client: IRestClient): Promise<string> {
         const { access_token, refresh_token } = await client.postJSON<{ access_token: string, refresh_token: string }>(
             'auth/token',
             { body: { grant_type: 'refresh_token', refresh_token: this.token }, token: '' }
         )
         this.token = refresh_token
-        await this.saveTokenHandler(this.token)
+        await this.tokenStorage.save(this.token)
         return access_token
     }
 }

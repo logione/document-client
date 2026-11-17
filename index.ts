@@ -1,4 +1,3 @@
-export * from './logione-document-client'
-export * from './logione-document-factory'
-export * from './tokenFileHandler'
+export { LogiONEDocumentClient } from './logione-document-client'
+export { TokenStorage } from './token-storage'
 export * from './search-query'
