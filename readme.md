@@ -63,7 +63,7 @@ await client.get(`documents/${id}/trash`) // documents can't be deleted, only mo
 await client.delete(`addresses/${addressId}`)
 ```
 
-If a request gets a `401 Unauthorized`, the client refreshes the access token and retries once. Other HTTP errors are thrown as a `RequestError` from [`@logi.one/rest-client`](https://www.npmjs.com/package/@logi.one/rest-client), with the HTTP code in `status`.
+If a request gets a `401 Unauthorized`, the client refreshes the access token and retries once. Concurrent requests share a single refresh. `GET`, `PUT` and `DELETE` requests are also retried up to 2 times after a network error or a `408`, `429`, `500`, `502`, `503` or `504` response; `POST` requests are not, since they could be processed twice. Other HTTP errors are thrown as a `RequestError` from [`@logi.one/rest-client`](https://www.npmjs.com/package/@logi.one/rest-client), with the HTTP code in `status`.
 
 ## Search
 
